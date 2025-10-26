@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventaris Stok - Kuning Hitam Bold</title>
+    <style>
+        :root {
+            --dark-bg: #111111; 
+            --card-bg: #222222; 
+            --accent-color: #FFC300; 
+            --primary-color: #f0f0f0; 
+            --border-color: #333333;
+        }
+
+        body {
+            font-family: 'Arial Black', sans-serif; 
+            background: var(--dark-bg);
+            margin: 0;
+            padding: 0;
+            color: var(--primary-color);
+        }
+
+        header {
+            background: var(--dark-bg); 
+            padding: 25px 0;
+            text-align: center;
+            border-bottom: 5px solid var(--accent-color); 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+        header h1 {
+            margin: 0;
+            color: var(--accent-color); 
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        .main-container {
+            display: flex; 
+            max-width: 1200px;
+            margin: 30px auto;
+            border-radius: 10px;
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--border-color);
+        }
+
+        .input-panel {
+            flex: 0 0 320px; 
+            background: var(--card-bg); 
+            color: var(--primary-color);
+            padding: 30px;
+            box-sizing: border-box;
+            border-right: 3px solid var(--accent-color);
+        }
+        .input-panel h2 {
+            color: var(--accent-color);
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            font-weight: 700;
+        }
+
+        #formBarang {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        #formBarang input {
+            padding: 12px;
+            border: 1px solid #555555;
+            background: #333333;
+            color: var(--primary-color);
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        #formBarang button {
+            padding: 12px;
+            border: none;
+            background: var(--accent-color); 
+            color: var(--dark-bg); 
+            font-weight: 900;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        #formBarang button:hover {
+            background: #ffdb58; 
+        }
+
+        .data-panel {
+            flex: 1; 
+            background: var(--card-bg);
+            padding: 30px;
+            overflow-x: auto;
+        }
+        .data-panel h2 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        #tabelBarang {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #tabelBarang th, #tabelBarang td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        #tabelBarang th {
+            background: #333333; 
+            color: var(--accent-color); 
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        #tabelBarang tr:hover td {
+            background-color: #282828; 
+        }
+
+        .hapus {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>(SISBAR) SISTEM INFORMASI STOCK BARANG</h1>
+    </header>
+
+    <div class="main-container">
+        <div class="input-panel">
+            <h2>INPUT DATA BARU</h2>
+            <form id="formBarang">
+                <input type="text" id="nama" placeholder="Nama Barang" required>
+                <input type="number" id="jumlah" placeholder="Jumlah (Unit)" required>
+                <input type="text" id="kategori" placeholder="Kategori" required>
+                <button type="submit">TAMBAH STOK</button>
+            </form>
+        </div>
+
+        <div class="data-panel">
+            <h2>LAPORAN STOK BARANG</h2>
+            <table id="tabelBarang">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">NO</th>
+                        <th style="width: 45%;">ITEM</th>
+                        <th style="width: 15%;">JUMLAH</th>
+                        <th style="width: 20%;">KATEGORI</th>
+                        <th style="width: 15%;">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody id="dataBarang">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('formBarang');
+        const tbody = document.getElementById('dataBarang');
+
+        let daftarBarang = [
+            { nama: "Gunting", jumlah: 15, kategori: "ATK" },
+            { nama: "Kertas A4", jumlah: 50, kategori: "ATK" },
+            { nama: "Stop Kontak", jumlah: 10, kategori: "Elektronik" }
+        ];
+
+        function updateTabel() {
+            tbody.innerHTML = ''; 
+            
+            daftarBarang.forEach((barang, index) => {
+                const row = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${barang.nama}</td>
+                        <td>${barang.jumlah}</td>
+                        <td>${barang.kategori}</td>
+                        <td><button class="hapus" onclick="hapusBarang(${index})">Hapus</button></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            
+            const nama = document.getElementById('nama').value;
+            const jumlah = document.getElementById('jumlah').value;
+            const kategori = document.getElementById('kategori').value;
+
+            daftarBarang.push({ nama, jumlah, kategori });
+            updateTabel();
+            form.reset();
+        });
+
+        function hapusBarang(index) {
+            daftarBarang.splice(index, 1); 
+            updateTabel();
+        }
+
+        updateTabel();
+    </script>
+</body>
+</html>
